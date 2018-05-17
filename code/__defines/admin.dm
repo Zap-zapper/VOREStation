@@ -40,3 +40,7 @@
 #define R_HOST          0x8000 //higher than this will overflow
 
 #define R_MAXPERMISSION 0x8000 // This holds the maximum value for a permission. It is used in iteration, so keep it updated.
+
+#define ADMIN_JMP(src) "(<a href='?_src_=holder;adminplayerobservecoodjump=1;X=[src.x];Y=[src.y];Z=[src.z]'>JMP</a>)"
+#define COORD(src) "[src ? "([src.x],[src.y],[src.z])" : "nonexistent location"]"
+#define ADMIN_COORDJMP(src) "[src ? "[COORD(src)] [ADMIN_JMP(src)]" : "nonexistent location"]"

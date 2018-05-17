@@ -16,3 +16,7 @@
 #define FLOOR(x, y) ( round((x) / (y)) * (y) )
 // Check if a BYOND dir var is a cardinal direction (power of two)
 #define IS_CARDINAL(x) ((x & (x - 1)) == 0)
+
+#define ISINTEGER(x) (round(x) == x)
+
+#define ISMULTIPLE(x, y) ((x) % (y) == 0)
