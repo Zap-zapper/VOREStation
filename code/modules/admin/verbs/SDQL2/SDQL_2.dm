@@ -127,7 +127,7 @@
 
 /proc/SDQL_gen_vv_href(t)
 	var/text = ""
-	text += "<A HREF='?_src_=vars;Vars=[\ref[t]]'>[\ref[t]]</A>"
+	text += "<A HREF='?_src_=vars;Vars=\ref[t]'>\[\ref[t]\]</A>"
 	if(istype(t, /atom))
 		var/atom/a = t
 		var/turf/T = a.loc
@@ -235,42 +235,42 @@
 
 	if(ispath(type, /mob))
 		for(var/mob/d in location)
-			if(typecache[d.type] && d.can_vv_get())
+			if(typecache[d.type])
 				out += d
 			CHECK_TICK
 
 	else if(ispath(type, /turf))
 		for(var/turf/d in location)
-			if(typecache[d.type] && d.can_vv_get())
+			if(typecache[d.type])
 				out += d
 			CHECK_TICK
 
 	else if(ispath(type, /obj))
 		for(var/obj/d in location)
-			if(typecache[d.type] && d.can_vv_get())
+			if(typecache[d.type])
 				out += d
 			CHECK_TICK
 
 	else if(ispath(type, /area))
 		for(var/area/d in location)
-			if(typecache[d.type] && d.can_vv_get())
+			if(typecache[d.type])
 				out += d
 			CHECK_TICK
 
 	else if(ispath(type, /atom))
 		for(var/atom/d in location)
-			if(typecache[d.type] && d.can_vv_get())
+			if(typecache[d.type])
 				out += d
 			CHECK_TICK
 	else if(ispath(type, /datum))
 		if(location == world) //snowflake for byond shortcut
 			for(var/datum/d) //stupid byond trick to have it not return atoms to make this less laggy
-				if(typecache[d.type] && d.can_vv_get())
+				if(typecache[d.type])
 					out += d
 				CHECK_TICK
 		else
 			for(var/datum/d in location)
-				if(typecache[d.type] && d.can_vv_get())
+				if(typecache[d.type])
 					out += d
 				CHECK_TICK
 
@@ -402,10 +402,7 @@
 			return null
 		start++
 	else if((!long || expression[start + 1] == ".") && (expression[start] in object.vars))
-		if(object.can_vv_get(expression[start]))
-			v = object.vars[expression[start]]
-		else
-			v = "SECRET"
+		v = object.vars[expression[start]]
 	else if(long && expression[start + 1] == ":" && hascall(object, expression[start]))
 		v = expression[start]
 	else if(!long || expression[start + 1] == ".")
@@ -450,7 +447,7 @@
 	var/list/new_args = list()
 	for(var/arg in arguments)
 		new_args += SDQL_expression(source, arg)
-	if(object == GLOB) // Global proc.
+	if(object == world) // Global proc.
 		procname = "/proc/[procname]"
 		return WrapAdminProcCall(GLOBAL_PROC, procname, new_args)
 	return WrapAdminProcCall(object, procname, new_args)

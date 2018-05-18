@@ -1485,3 +1485,5 @@ var/mob/dview/dview_mob = new
 		return
 	var/datum/D = list_or_datum
 	D.vars[var_name] = var_value
+
+#define UNTIL(X) while(!(X)) stoplag()

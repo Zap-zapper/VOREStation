@@ -1,3 +1,44 @@
+var/AdminProcCaller
+var/AdminProcCallCount = 0
+var/LastAdminCalledTargetRef
+var/LastAdminCalledTarget
+var/LastAdminCalledProc
+var/AdminProcCallSpamPrevention = list()
+
+/proc/WrapAdminProcCall(target, procname, list/arguments)
+	if(target && procname == "Del")
+		to_chat(usr, "Calling Del() is not allowed")
+		return
+	var/current_caller = global.AdminProcCaller
+	var/ckey = usr ? usr.client.ckey : global.AdminProcCaller
+	if(!ckey)
+		CRASH("WrapAdminProcCall with no ckey: [target] [procname] [english_list(arguments)]")
+	if(current_caller && current_caller != ckey)
+		if(!global.AdminProcCallSpamPrevention[ckey])
+			to_chat(usr, "<span class='adminnotice'>Another set of admin called procs are still running, your proc will be run after theirs finish.</span>")
+			global.AdminProcCallSpamPrevention[ckey] = TRUE
+			UNTIL(!global.AdminProcCaller)
+			to_chat(usr, "<span class='adminnotice'>Running your proc</span>")
+			global.AdminProcCallSpamPrevention -= ckey
+		else
+			UNTIL(!global.AdminProcCaller)
+	global.LastAdminCalledProc = procname
+	if(target != GLOBAL_PROC)
+		global.LastAdminCalledTargetRef = "\ref[target]"
+	global.AdminProcCaller = ckey	//if this runtimes, too bad for you
+	++global.AdminProcCallCount
+	. = world.WrapAdminProcCall(target, procname, arguments)
+	if(--global.AdminProcCallCount == 0)
+		global.AdminProcCaller = null
+
+//adv proc call this, ya nerds
+/world/proc/WrapAdminProcCall(target, procname, list/arguments)
+	if(target == GLOBAL_PROC)
+		return call(procname)(arglist(arguments))
+	else if(target != world)
+		return call(target, procname)(arglist(arguments))
+	else
+		log_and_message_admins("[key_name(usr)] attempted to call world/proc/[procname] with arguments: [english_list(arguments)]")
 
 /client/proc/callproc()
 	set category = "Debug"
