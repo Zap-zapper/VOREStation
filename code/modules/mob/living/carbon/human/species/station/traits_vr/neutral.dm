@@ -25,7 +25,7 @@
 	cost = 0
 	var_changes = list("cold_level_1" = 200,  "cold_level_2" = 150, "cold_level_3" = 90, "breath_cold_level_1" = 180, "breath_cold_level_2" = 100, "breath_cold_level_3" = 60, "cold_discomfort_level" = 210, "heat_level_1" = 305, "heat_level_2" = 360, "heat_level_3" = 700, "breath_heat_level_1" = 345, "breath_heat_level_2" = 380, "breath_heat_level_3" = 780, "heat_discomfort_level" = 295, "body_temperature" = 290)
 	excludes = list(/datum/trait/hotadapt)
-	
+
 /datum/trait/hotadapt
 	name = "Heat-Adapted"
 	desc = "You are able to withstand much hotter temperatures than other species, and can even be comfortable in extremely hot environments. You are also more vulnerable to cold environments, and have a higher body temperature as a consequence of these adaptations."
@@ -89,16 +89,6 @@
 /datum/trait/resizing_immunity/apply(var/datum/species/S,var/mob/living/carbon/human/H)
 	..(S,H)
 	H.verbs |= /mob/living/carbon/human/proc/toggle_resizing_immunity
-
-/datum/trait/size_shift
-	name = "Sizeshifting"
-	desc = "You have ability to change size - both your own and others."
-	cost = 0
-
-/datum/trait/size_shift/apply(var/datum/species/S,var/mob/living/carbon/human/H)
-	..(S,H)
-	H.verbs |= /mob/living/carbon/human/proc/change_target_size
-	H.verbs |= /mob/living/proc/set_size
 
 /datum/trait/feeder
 	name = "Feeder"

@@ -67,7 +67,7 @@ var/const/RESIZE_A_SMALLTINY = (RESIZE_SMALL + RESIZE_TINY) / 2
 	return istype(A, /area/crew_quarters/sleep)
 
 /atom/movable/proc/size_range_check(size_select)		//both objects and mobs needs to have that
-	if((!in_dorms() && (size_select > 200 || size_select < 25)) || (size_select > 550 || size_select <1))
+	if((!in_dorms() && (size_select > 200 || size_select < 25)) || (size_select > 600 || size_select <1))
 		return FALSE
 	return TRUE
 
@@ -78,11 +78,12 @@ var/const/RESIZE_A_SMALLTINY = (RESIZE_SMALL + RESIZE_TINY) / 2
 
 	size_multiplier = new_size //Change size_multiplier so that other items can interact with them
 	var/mob/living/carbon/human/H = src
-	if(new_size > 2 || new_size < 0.25)
-		if(mark_unnatural_size)		//Will target size be reverted to ordinary bounds when out of dorms or not?
-			H.unnaturally_resized = TRUE
-	else
-		H.unnaturally_resized = FALSE
+	if(istype(H))
+		if(new_size > 2 || new_size < 0.25)
+			if(mark_unnatural_size)		//Will target size be reverted to ordinary bounds when out of dorms or not?
+				H.unnaturally_resized = TRUE
+		else
+			H.unnaturally_resized = FALSE
 	if(animate)
 		var/change = new_size - size_multiplier
 		var/duration = (abs(change)+0.25) SECONDS
@@ -128,9 +129,14 @@ var/const/RESIZE_A_SMALLTINY = (RESIZE_SMALL + RESIZE_TINY) / 2
 	set name = "Adjust Size"
 	set category = "Abilities" //Seeing as prometheans have an IC reason to be changing mass.
 
-	var/nagmessage = "Adjust your mass to be a size between 25 to 200% (or 1% to 550% in dormitories). DO NOT ABUSE."
+	var/nagmessage = "Adjust your mass to be a size between 25 to 200% (or 1% to 600% in dormitories). DO NOT ABUSE."
 	var/new_size = input(nagmessage, "Pick a Size") as num|null
 	var/message_to_show = input(src, "Select a message for everyone to see. %user is replaced with your name. Starts with [src]...",, "changes size!") as text|null
+	var/mob/living/carbon/human/H = src
+	if(istype(H))
+		if(!H.species.resizable)
+			to_chat(src, "<span class='warning'>You are immune to resizing!</span>")
+			return
 	if(new_size && size_range_check(new_size))
 		resize(new_size/100)
 		// I'm not entirely convinced that `src ? ADMIN_JMP(src) : "null"` here does anything

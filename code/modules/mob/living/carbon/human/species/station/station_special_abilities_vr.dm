@@ -410,29 +410,41 @@
 		to_chat(C, "<span class='warning'>You must be grabbing a creature in your active hand to change their size.</span>")
 		return
 
-	var/mob/living/carbon/human/T = G.affecting
-	if(!istype(T))
-		to_chat(src, "<span class='warning'>\The [T] won't be affected.</span>")
+
+	var/mob/living/L = G.affecting
+	if(!istype(L))
+		to_chat(src, "<span class='warning'>\The [L] won't be affected.</span>")
 		return
 
-	if(!T.species.resizable)
-		to_chat(src, "<span class='warning'>[T] resists your attempts to change their size!</span>")
-		return
+	var/mob/living/carbon/human/T = L
+
+	if(istype(T))
+		if(!T.species.resizable)
+			to_chat(src, "<span class='warning'>[T] resists your attempts to change their size!</span>")
+			return
 
 	var/new_size = input(src, "Pick a Size") as num|null
 	var/message_to_show = input(src, "Select a message for everyone to see. %user is replaced with your name, %target with target's. Starts with [src]...", , "does something with %target, which causes them to change size!") as text|null
-	if(new_size && !size_range_check(new_size) && T.species.resizable)
+	if(new_size && size_range_check(new_size))
 		G = src.get_active_hand()
 		if(!istype(G))
 			to_chat(C, "<span class='warning'>You must be grabbing a creature in your active hand to change their size.</span>")
 			return
-		if(G.affecting != T)
+		if(G.affecting != L)
 			return
-		T.resize(new_size/100)
+		var/modified_size
+		if(istype(T))
+			if(!T.species.resizable)
+				to_chat(src, "<span class='warning'>[T] resists your attempts to change their size!</span>")
+				return
+			modified_size = clamp(new_size/100,0.01,6)
+		else
+			modified_size = clamp(new_size/100,0.25,2)		//Non-humans never should be too big.
+		L.resize(modified_size)
 		message_to_show = replacetext(message_to_show, "%user", src)
-		message_to_show = replacetext(message_to_show, "%target", T)
-		visible_message("<span class='notice'>[src] [message_to_show]</span>")
-		message_admins("[key_name(src)] used the resize command in-game to resize [T] ([key_name(T)]) to [new_size]% size [src ? ADMIN_JMP(src) : "null"]")
+		message_to_show = replacetext(message_to_show, "%target", L)
+		visible_message("<span class='warning'>[src] [message_to_show]</span>")
+		message_admins("[key_name(src)] used the resize command in-game to resize [L] ([key_name(L)]) to [modified_size*100]% size [src ? ADMIN_JMP(src) : "null"]")
 
 
 /mob/living/carbon/human/proc/toggle_resizing_immunity()
@@ -441,7 +453,7 @@
 	set category = "Abilities"
 
 	species.resizable = !species.resizable
-	to_chat(src, "<span class='notice'>You are now [species.resizable ? "susceptible" : "immune"] to your size being changed.</span>")
+	to_chat(src, "<span class='notice'>You are now [species.resizable ? "susceptible" : "immune"] to being resized.</span>")
 
 
 //Welcome to the adapted changeling absorb code.

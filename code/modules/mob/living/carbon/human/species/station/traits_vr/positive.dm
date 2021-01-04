@@ -123,7 +123,17 @@
 
 /datum/trait/antiseptic_saliva/apply(var/datum/species/S,var/mob/living/carbon/human/H)
 	..()
-	H.verbs |= /mob/living/carbon/human/proc/lick_wounds 
+	H.verbs |= /mob/living/carbon/human/proc/lick_wounds
+
+/datum/trait/size_shift
+	name = "Sizeshifting"
+	desc = "You have ability to change size - both your own and others."
+	cost = 2
+
+/datum/trait/size_shift/apply(var/datum/species/S,var/mob/living/carbon/human/H)
+	..(S,H)
+	H.verbs |= /mob/living/carbon/human/proc/change_target_size
+	H.verbs |= /mob/living/proc/set_size
 
 /datum/trait/traceur
 	name = "Traceur"
