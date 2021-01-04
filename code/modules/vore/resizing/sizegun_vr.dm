@@ -41,7 +41,7 @@
 	set category = "Object"
 	set src in view(1)
 
-	var/size_select = input("Put the desired size (25-200%), (1-550%) in dormidory areas.", "Set Size", size_set_to * 100) as num
+	var/size_select = input("Put the desired size (25-200%), (1-550%) in dormitory areas.", "Set Size", size_set_to * 100) as num
 	if(!size_range_check(size_select))
 		to_chat(usr, "<span class='notice'>Invalid size.</span>")
 		return
@@ -74,7 +74,7 @@
 		if(!M.in_dorms())
 			M.resize(clamp(set_size,0.25,2))
 		else
-			M.resize(set_size)
+			M.resize(clamp(set_size,0.01,5.5))
 		to_chat(M, "<font color='blue'> The beam fires into your body, changing your size!</font>")
 		M.updateicon()
 		return

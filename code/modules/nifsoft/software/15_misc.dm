@@ -127,7 +127,7 @@
 
 /datum/nifsoft/sizechange/activate()
 	if((. = ..()))
-		var/new_size = input("Put the desired size (25-200%), or (1-550%) in dormidory areas.", "Set Size", 200) as num|null
+		var/new_size = input("Put the desired size (25-200%), or (1-550%) in dormitory areas.", "Set Size", 200) as num|null
 
 		if (!nif.human.size_range_check(new_size))
 			to_chat(nif.human,"<span class='notice'>The safety features of the NIF Program prevent you from choosing this size.</span>")

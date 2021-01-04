@@ -12,8 +12,6 @@ var/const/RESIZE_A_BIGNORMAL = (RESIZE_BIG + RESIZE_NORMAL) / 2
 var/const/RESIZE_A_NORMALSMALL = (RESIZE_NORMAL + RESIZE_SMALL) / 2
 var/const/RESIZE_A_SMALLTINY = (RESIZE_SMALL + RESIZE_TINY) / 2
 
-var/list/dorm_areas = list()
-
 // Adding needed defines to /mob/living
 // Note: Polaris had this on /mob/living/carbon/human We need it higher up for animals and stuff.
 /mob/living
@@ -65,13 +63,8 @@ var/list/dorm_areas = list()
  */
 
 /atom/movable/proc/in_dorms()
-	if(!dorm_areas.len)
-		dorm_areas = get_areas(/area/crew_quarters/sleep)
-
 	var/area/A = get_area(src)
-	if(locate(A) in dorm_areas)
-		return TRUE
- 	return FALSE
+	return istype(A, /area/crew_quarters/sleep)
 
 /atom/movable/proc/size_range_check(size_select)		//both objects and mobs needs to have that
 	if((!in_dorms() && (size_select > 200 || size_select < 25)) || (size_select > 550 || size_select <1))
@@ -110,7 +103,7 @@ var/list/dorm_areas = list()
 
 /mob/living/carbon/human/resize(var/new_size, var/animate = TRUE)
 	if(species)
-		if(species.resizable == FALSE)
+		if(!species.resizable)
 			return 1
 		vis_height = species.icon_height
 	. = ..()
@@ -135,7 +128,7 @@ var/list/dorm_areas = list()
 	set name = "Adjust Size"
 	set category = "Abilities" //Seeing as prometheans have an IC reason to be changing mass.
 
-	var/nagmessage = "Adjust your mass to be a size between 25 to 200% (or 1% to 550% in dormidories)"
+	var/nagmessage = "Adjust your mass to be a size between 25 to 200% (or 1% to 550% in dormitories). DO NOT ABUSE."
 	var/new_size = input(nagmessage, "Pick a Size") as num|null
 	var/message_to_show = input(src, "Select a message for everyone to see. %user is replaced with your name. Starts with [src]...",, "changes size!") as text|null
 	if(new_size && size_range_check(new_size))
