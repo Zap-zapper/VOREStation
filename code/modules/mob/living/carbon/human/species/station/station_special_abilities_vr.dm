@@ -397,6 +397,53 @@
 		B.drip(1)
 
 
+/mob/living/carbon/human/proc/change_target_size()
+	set name = "Resize target"
+	set desc = "Resizes target to the chosen size"
+	set category = "Abilities"
+
+	if(!ishuman(src))
+		return //If you're not a human you don't have permission to do this.
+	var/mob/living/carbon/human/C = src
+	var/obj/item/weapon/grab/G = src.get_active_hand()
+	if(!istype(G))
+		to_chat(C, "<span class='warning'>You must be grabbing a creature in your active hand to change their size.</span>")
+		return
+
+	var/mob/living/carbon/human/T = G.affecting
+	if(!istype(T))
+		to_chat(src, "<span class='warning'>\The [T] won't be affected.</span>")
+		return
+
+	if(!T.species.resizable)
+		to_chat(src, "<span class='warning'>[T] resists your attempts to change their size!</span>")
+		return
+
+	var/new_size = input(src, "Pick a Size") as num|null
+	var/message_to_show = input(src, "Select a message for everyone to see. %user is replaced with your name, %target with target's. Starts with [src]...", , "does something with %target, which causes them to change size!") as text|null
+	if(new_size && !size_range_check(new_size) && T.species.resizable)
+		G = src.get_active_hand()
+		if(!istype(G))
+			to_chat(C, "<span class='warning'>You must be grabbing a creature in your active hand to change their size.</span>")
+			return
+		if(G.affecting != T)
+			return
+		T.resize(new_size/100)
+		message_to_show = replacetext(message_to_show, "%user", src)
+		message_to_show = replacetext(message_to_show, "%target", T)
+		visible_message("<span class='notice'>[src] [message_to_show]</span>")
+		message_admins("[key_name(src)] used the resize command in-game to resize [T] ([key_name(T)]) to [new_size]% size [src ? ADMIN_JMP(src) : "null"]")
+
+
+/mob/living/carbon/human/proc/toggle_resizing_immunity()
+	set name = "Toggle Resizing Immunity"
+	set desc = "Toggles your ability to resist resizing attempts"
+	set category = "Abilities"
+
+	species.resizable = !species.resizable
+	to_chat(src, "<span class='notice'>You are now [species.resizable ? "susceptible" : "immune"] to your size being changed.</span>")
+
+
 //Welcome to the adapted changeling absorb code.
 /mob/living/carbon/human/proc/succubus_drain()
 	set name = "Drain prey of nutrition"

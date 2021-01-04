@@ -62,6 +62,8 @@
 
 	//No need to update all of these procs if the guy is dead.
 	fall() //VORESTATION EDIT. Prevents people from floating
+	if(unnaturally_resized)
+		handle_unnatural_size()
 	if(stat != DEAD && !stasis)
 		//Updates the number of stored chemicals for powers
 		handle_changeling()
@@ -1291,7 +1293,7 @@
 			clear_alert("blind")
 
 		var/apply_nearsighted_overlay = FALSE
-		if(disabilities & NEARSIGHTED)	
+		if(disabilities & NEARSIGHTED)
 			apply_nearsighted_overlay = TRUE
 
 			if(glasses)

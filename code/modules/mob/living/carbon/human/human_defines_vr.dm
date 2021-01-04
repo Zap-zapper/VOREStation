@@ -11,6 +11,8 @@
 	var/sensorpref = 5		//Suit sensor loadout pref
 	var/wings_hidden = FALSE
 
+	var/unnaturally_resized = FALSE 		//If got bigger than 200% or smaller than 25%
+
 /mob/living/carbon/human/proc/shadekin_get_energy()
 	var/datum/species/shadekin/SK = species
 

@@ -60,13 +60,20 @@
 //Overriding carbon move proc that forces default hunger factor
 /mob/living/carbon/Moved(atom/old_loc, direction, forced = FALSE)
 	. = ..()
-	
+
 	// Technically this does mean being dragged takes nutrition
 	if(stat != DEAD)
 		adjust_nutrition(hunger_rate/-10)
 		if(m_intent == "run")
 			adjust_nutrition(hunger_rate/-10)
-	
+
 	// Moving around increases germ_level faster
 	if(germ_level < GERM_LEVEL_MOVE_CAP && prob(8))
 		germ_level++
+
+/mob/living/carbon/human/proc/handle_unnatural_size()
+	if(!in_dorms())
+		if(src.size_multiplier > 2)
+			src.resize(2)
+		else if (src.size_multiplier < 0.25)
+			src.resize(0.25)

@@ -12,6 +12,8 @@ var/const/RESIZE_A_BIGNORMAL = (RESIZE_BIG + RESIZE_NORMAL) / 2
 var/const/RESIZE_A_NORMALSMALL = (RESIZE_NORMAL + RESIZE_SMALL) / 2
 var/const/RESIZE_A_SMALLTINY = (RESIZE_SMALL + RESIZE_TINY) / 2
 
+var/list/dorm_areas = list()
+
 // Adding needed defines to /mob/living
 // Note: Polaris had this on /mob/living/carbon/human We need it higher up for animals and stuff.
 /mob/living
@@ -61,11 +63,33 @@ var/const/RESIZE_A_SMALLTINY = (RESIZE_SMALL + RESIZE_TINY) / 2
  * Resizes the mob immediately to the desired mod, animating it growing/shrinking.
  * It can be used by anything that calls it.
  */
-/mob/living/proc/resize(var/new_size, var/animate = TRUE)
+
+/atom/movable/proc/in_dorms()
+	if(!dorm_areas.len)
+		dorm_areas = get_areas(/area/crew_quarters/sleep)
+
+	var/area/A = get_area(src)
+	if(locate(A) in dorm_areas)
+		return TRUE
+ 	return FALSE
+
+/atom/movable/proc/size_range_check(size_select)		//both objects and mobs needs to have that
+	if((!in_dorms() && (size_select > 200 || size_select < 25)) || (size_select > 550 || size_select <1))
+		return FALSE
+	return TRUE
+
+
+/mob/living/proc/resize(var/new_size, var/animate = TRUE, var/mark_unnatural_size = TRUE)
 	if(size_multiplier == new_size)
 		return 1
 
 	size_multiplier = new_size //Change size_multiplier so that other items can interact with them
+	var/mob/living/carbon/human/H = src
+	if(new_size > 2 || new_size < 0.25)
+		if(mark_unnatural_size)		//Will target size be reverted to ordinary bounds when out of dorms or not?
+			H.unnaturally_resized = TRUE
+	else
+		H.unnaturally_resized = FALSE
 	if(animate)
 		var/change = new_size - size_multiplier
 		var/duration = (abs(change)+0.25) SECONDS
@@ -86,6 +110,8 @@ var/const/RESIZE_A_SMALLTINY = (RESIZE_SMALL + RESIZE_TINY) / 2
 
 /mob/living/carbon/human/resize(var/new_size, var/animate = TRUE)
 	if(species)
+		if(species.resizable == FALSE)
+			return 1
 		vis_height = species.icon_height
 	. = ..()
 	if(LAZYLEN(hud_list) && has_huds)
@@ -106,15 +132,18 @@ var/const/RESIZE_A_SMALLTINY = (RESIZE_SMALL + RESIZE_TINY) / 2
 
 
 /mob/living/proc/set_size()
-	set name = "Adjust Mass"
+	set name = "Adjust Size"
 	set category = "Abilities" //Seeing as prometheans have an IC reason to be changing mass.
 
-	var/nagmessage = "Adjust your mass to be a size between 25 to 200% (DO NOT ABUSE)"
+	var/nagmessage = "Adjust your mass to be a size between 25 to 200% (or 1% to 550% in dormidories)"
 	var/new_size = input(nagmessage, "Pick a Size") as num|null
-	if(new_size && ISINRANGE(new_size, 25, 200))
+	var/message_to_show = input(src, "Select a message for everyone to see. %user is replaced with your name. Starts with [src]...",, "changes size!") as text|null
+	if(new_size && size_range_check(new_size))
 		resize(new_size/100)
 		// I'm not entirely convinced that `src ? ADMIN_JMP(src) : "null"` here does anything
 		// but just in case it does, I'm leaving the null-src checking
+		message_to_show = replacetext(message_to_show, "%user", src)
+		visible_message("<span class='notice'>[src] [message_to_show]</span>")
 		message_admins("[key_name(src)] used the resize command in-game to be [new_size]% size. [src ? ADMIN_JMP(src) : "null"]")
 
 /*

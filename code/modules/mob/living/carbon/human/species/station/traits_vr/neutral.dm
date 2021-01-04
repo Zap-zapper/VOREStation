@@ -80,6 +80,26 @@
 	H.verbs |= /mob/living/carbon/human/proc/succubus_drain_finalize
 	H.verbs |= /mob/living/carbon/human/proc/succubus_drain_lethal
 
+/datum/trait/resizing_immunity
+	name = "Resize Immunity"
+	desc = "You have toggleable immunity to being shrunk or enlarged."
+	cost = 0
+	var_changes = list("resizable" = 0)
+
+/datum/trait/resizing_immunity/apply(var/datum/species/S,var/mob/living/carbon/human/H)
+	..(S,H)
+	H.verbs |= /mob/living/carbon/human/proc/toggle_resizing_immunity
+
+/datum/trait/size_shift
+	name = "Sizeshifting"
+	desc = "You have ability to change size - both your own and others."
+	cost = 0
+
+/datum/trait/size_shift/apply(var/datum/species/S,var/mob/living/carbon/human/H)
+	..(S,H)
+	H.verbs |= /mob/living/carbon/human/proc/change_target_size
+	H.verbs |= /mob/living/proc/set_size
+
 /datum/trait/feeder
 	name = "Feeder"
 	desc = "Allows you to feed your prey using your own body."
@@ -139,7 +159,7 @@
 	desc = "Spicy (and chilly) peppers are three times as strong. (This does not affect pepperspray.)"
 	cost = 0
 	var_changes = list("spice_mod" = 3) // 300% as effective if spice_mod is set to 1. If it's not 1 in species.dm, update this!
-	
+
 /datum/trait/spice_intolerance_basic
 	name = "Heavy Spice Intolerance"
 	desc = "Spicy (and chilly) peppers are twice as strong. (This does not affect pepperspray.)"
@@ -157,7 +177,7 @@
 	desc = "Spicy (and chilly) peppers are only three-quarters as strong. (This does not affect pepperspray.)"
 	cost = 0
 	var_changes = list("spice_mod" = 0.75) // 75% as effective if spice_mod is set to 1. If it's not 1 in species.dm, update this!
-	
+
 /datum/trait/spice_tolerance_advanced
 	name = "Strong Spice Tolerance"
 	desc = "Spicy (and chilly) peppers are only half as strong. (This does not affect pepperspray.)"
@@ -194,7 +214,7 @@
 	desc = "You can hold drinks much better than those lily-livered land-lubbers! Arr! Drinks are only three-quarters as strong."
 	cost = 0
 	var_changes = list("alcohol_mod" = 0.75) // 75% as effective if alcohol_mod is set to 1. If it's not 1 in species.dm, update this!
-	
+
 /datum/trait/alcohol_tolerance_advanced
 	name = "Liver of Steel"
 	desc = "Drinks tremble before your might! You can hold your alcohol twice as well as those blue-bellied barnacle boilers! Drinks are only half as strong."

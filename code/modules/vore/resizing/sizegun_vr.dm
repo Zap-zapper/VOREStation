@@ -41,8 +41,8 @@
 	set category = "Object"
 	set src in view(1)
 
-	var/size_select = input("Put the desired size (25-200%)", "Set Size", size_set_to * 100) as num
-	if(size_select > 200 || size_select < 25)
+	var/size_select = input("Put the desired size (25-200%), (1-550%) in dormidory areas.", "Set Size", size_set_to * 100) as num
+	if(!size_range_check(size_select))
 		to_chat(usr, "<span class='notice'>Invalid size.</span>")
 		return
 	size_set_to = (size_select/100)
@@ -71,7 +71,10 @@
 /obj/item/projectile/beam/sizelaser/on_hit(var/atom/target)
 	var/mob/living/M = target
 	if(istype(M))
-		M.resize(set_size)
+		if(!M.in_dorms())
+			M.resize(clamp(set_size,0.25,2))
+		else
+			M.resize(set_size)
 		to_chat(M, "<font color='blue'> The beam fires into your body, changing your size!</font>")
 		M.updateicon()
 		return
